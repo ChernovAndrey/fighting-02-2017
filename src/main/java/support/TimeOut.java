@@ -6,6 +6,10 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+
+import static sample.controllers.UserController.URIRequest.login;
 
 /**
  * Created by andrey on 10.05.17.
@@ -13,12 +17,19 @@ import java.util.concurrent.ConcurrentHashMap;
 //пока что не используется!
 @Service
 public class TimeOut {
-    private Map<String, Date> lastVisit = new ConcurrentHashMap<>();
+    private volatile Map<String, Date> lastVisit = new ConcurrentHashMap<>();
 
     public void setVisit(ArrayList<String> logins) {
         logins.forEach(this::setVisit);
     }
 
+    private ExecutorService checkExecutor = Executors.newSingleThreadExecutor();
+
+    public  void startCheck(){
+        while (true){
+          //  checkExecutor.submit(this::checkAndSupportConnect);
+        }
+    }
     public void setVisit(String login) {
         lastVisit.put(login, new Date());
     }
@@ -27,18 +38,4 @@ public class TimeOut {
         return lastVisit.get(login);
     }
 
-    public boolean checkAndSet(String login) {
-        final Date visit = getVisit(login);
-        if (getVisit(login) == null) {
-            setVisit(login);
-            return true;
-        }
-        final Date date = new Date();
-        if ((date.getTime() - visit.getTime() <= 31000)) {
-            setVisit(login);
-            return true;
-        }
-        lastVisit.remove(login);
-        return false;
-    }
 }

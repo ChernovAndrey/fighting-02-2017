@@ -13,6 +13,7 @@ import support.TimeOut;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicLong;
 
@@ -20,22 +21,19 @@ import java.util.concurrent.atomic.AtomicLong;
  * Created by andrey on 25.04.17.
  */
 @Service
-public class GameMechanicsSingleThread {
+public class GameMechanics {
     @Autowired
     private SocketService socketService;
     @Autowired
     private GameService gameService;
-    volatile boolean flagexecutor=false;
     ScheduledFuture<?> future;
-    ScheduledExecutorService executor = Executors.newScheduledThreadPool(1);
+    ScheduledExecutorService executorScheduled = Executors.newScheduledThreadPool(1);
     static final Logger log = Logger.getLogger(UserController.class);
+    private volatile @NotNull Map<String,Boolean> didStep= new ConcurrentHashMap<>();
     Answer answer = new Answer();
-  //  private ExecutorService tickExecutor = Executors.newSingleThreadExecutor();
     private AtomicLong id = new AtomicLong(1);
     private volatile @NotNull ConcurrentLinkedQueue<String> waiters = new ConcurrentLinkedQueue<>();
-    private volatile @NotNull HashMap<Long, Players> playingNow = new HashMap<>();
-
-
+    private volatile @NotNull Map<Long, Players> playingNow = new ConcurrentHashMap<>();
     public void addWaiters(String login){
         if (waiters.isEmpty()) {
             System.out.println("Waiting");
@@ -46,20 +44,36 @@ public class GameMechanicsSingleThread {
             playingNow.put(id.get(), players);
             startGame(players.getLogins());
         }
+        future=executorScheduled.scheduleAtFixedRate(()->{
+                if (socketService.isConnected(login)) socketService.sendMessageToUser(login,answer.messageClient("pulse"));
+                else future.cancel(false);
+            }, 0, 15, TimeUnit.SECONDS);
     }
 
     public void startGame(ArrayList<String> logins) {
-        if (flagexecutor==false){
-            flagexecutor=true;
-            future=executor.scheduleAtFixedRate(()->{
-                playingNow.forEach((id,players)->{
-                    socketService.sendMessageToUser(players.getLogins().get(0),answer.messageClient("pulse"));
-                    socketService.sendMessageToUser(players.getLogins().get(1),answer.messageClient("pulse"));
-                });
-            }, 0, 5, TimeUnit.SECONDS);
-        }
         logins.forEach(item -> socketService.sendMessageToUser(item, answer.messageClient(id.get(), logins)));
         id.getAndIncrement();
+    }
+
+    public void setTimeout(String login,Long id){
+        didStep.put(login,false);
+        executorScheduled.schedule(()->{
+            if(didStep.get(login)==false) {
+                final Players players=playingNow.get(id);
+                if(players!=null) {
+                    socketService.cutDownConnection(login,CloseStatus.GOING_AWAY);
+                    if(players.getLogins().get(0).equals(login)){
+                        socketService.sendMessageToUser(players.getLogins().get(1), answer.messageClient("you win, your opponent go away"));
+                    }
+                    else{
+                        socketService.sendMessageToUser(players.getLogins().get(1), answer.messageClient("you win, your opponent go away"));
+                        socketService.cutDownConnection(players.getLogins().get(1),CloseStatus.NORMAL);
+                    }
+                    didStep.remove(login);
+                    playingNow.remove(id);
+                }
+            }
+        }, 31, TimeUnit.SECONDS);
     }
 
     public void gmStep(Players players) {

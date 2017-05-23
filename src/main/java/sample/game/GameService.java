@@ -5,7 +5,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import sample.websocket.SocketService;
 
-import java.io.IOException;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -18,17 +17,19 @@ public class GameService {
     @Autowired
     private SocketService socketService;
     @Autowired
-    private GameMechanicsSingleThread gameMechanicsSingleThread;
+    private GameMechanics gameMechanics;
     private ExecutorService tickExecutor = Executors.newFixedThreadPool(4);
     private @NotNull ConcurrentLinkedQueue<String> waiters = new ConcurrentLinkedQueue<>();
 
     public void addWaiters(String login) {
-        tickExecutor.submit(() -> gameMechanicsSingleThread.addWaiters(login));
+        tickExecutor.submit(() -> gameMechanics.addWaiters(login));
     }
 
     public void addSnap(SnapClient snap) {
-        tickExecutor.submit(() -> gameMechanicsSingleThread.addSnap(snap));
-
+        tickExecutor.submit(() -> gameMechanics.addSnap(snap));
+    }
+    public void setTimeOut(String login,Long id) {
+        tickExecutor.submit(() -> gameMechanics.setTimeout(login,id));
     }
 }
 

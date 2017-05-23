@@ -63,6 +63,11 @@ public class GameWebSocketHandler extends TextWebSocketHandler {
                     snapClient.setLogin(login);
                     socketService.transportToMechanics(snapClient);
                     break;
+                case "startStep":
+                        final JSONObject json=new JSONObject();
+                        final Long id= (Long) json.get("id");
+                        if(id==null) throw new Exception();
+                        socketService.transportTotimeOut(login,id);
                 default:
                     System.out.println("This type is not supported");
                     log.error("This type is not supported");

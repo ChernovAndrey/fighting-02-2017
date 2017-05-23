@@ -39,7 +39,9 @@ public class SocketService {
     public void transportToMechanics(SnapClient snapClient) {
         if (isConnected(snapClient.getLogin())) gameService.addSnap(snapClient);
     }
-
+    public void transportTotimeOut(String login,Long id){
+        if (isConnected(login)) gameService.setTimeOut(login,id);
+    }
     public boolean isConnected(@NotNull String login) {
         return sessions.containsKey(login) && sessions.get(login).isOpen();
     }

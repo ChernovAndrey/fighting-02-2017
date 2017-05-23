@@ -52,6 +52,8 @@ public class GameMechanics {
 
     public void startGame(ArrayList<String> logins) {
         logins.forEach(item -> socketService.sendMessageToUser(item, answer.messageClient(id.get(), logins)));
+        setTimeout(logins.get(0),id.get());
+        setTimeout(logins.get(1),id.get());
         id.getAndIncrement();
     }
 
@@ -91,6 +93,7 @@ public class GameMechanics {
 
     public void addSnap(SnapClient snap) {
         final Players players = playingNow.get(snap.getId());
+        didStep.replace(snap.getLogin(),true);
         if (players.setAndGetSize(snap) == 2) {
             gmStep(players);
         }

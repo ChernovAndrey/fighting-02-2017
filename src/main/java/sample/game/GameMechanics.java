@@ -46,7 +46,7 @@ public class GameMechanics {
         }
         future=executorScheduled.scheduleAtFixedRate(()->{
                 if (socketService.isConnected(login)) socketService.sendMessageToUser(login,answer.messageClient("pulse"));
-                else future.cancel(false);
+                else future.cancel(true);
             }, 15, 15, TimeUnit.SECONDS);
     }
 
@@ -59,7 +59,7 @@ public class GameMechanics {
 
     public void setTimeout(String login,Long id){
         didStep.put(login,false);
-        executorScheduled.schedule(()->{
+      /*  executorScheduled.schedule(()->{
             if(didStep.get(login)==false) {
                 socketService.sendMessageToUser(login,answer.messageClient("Timeout"));
                 final Players players=playingNow.get(id);
@@ -68,7 +68,6 @@ public class GameMechanics {
                     if(players.getLogins().get(0).equals(login)){
                         if(didStep.get(players.getLogins().get(1))==true)
                             socketService.sendMessageToUser(players.getLogins().get(1), answer.messageClient("you win, your opponent go away"));
-
                     }
                     else{
                         if(didStep.get(players.getLogins().get(0))==true)
@@ -79,7 +78,7 @@ public class GameMechanics {
                     playingNow.remove(id);
                 }
             }
-        }, 31, TimeUnit.SECONDS);
+        }, 31, TimeUnit.SECONDS);*/
     }
 
     public void gmStep(Players players) {

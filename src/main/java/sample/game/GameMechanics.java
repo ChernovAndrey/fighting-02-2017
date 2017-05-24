@@ -47,7 +47,7 @@ public class GameMechanics {
         future=executorScheduled.scheduleAtFixedRate(()->{
                 if (socketService.isConnected(login)) socketService.sendMessageToUser(login,answer.messageClient("pulse"));
                 else future.cancel(false);
-            }, 0, 15, TimeUnit.SECONDS);
+            }, 15, 15, TimeUnit.SECONDS);
     }
 
     public void startGame(ArrayList<String> logins) {
@@ -61,16 +61,20 @@ public class GameMechanics {
         didStep.put(login,false);
         executorScheduled.schedule(()->{
             if(didStep.get(login)==false) {
+                socketService.sendMessageToUser(login,answer.messageClient("Timeout"));
                 final Players players=playingNow.get(id);
                 if(players!=null) {
                     socketService.cutDownConnection(login,CloseStatus.GOING_AWAY);
                     if(players.getLogins().get(0).equals(login)){
-                        socketService.sendMessageToUser(players.getLogins().get(1), answer.messageClient("you win, your opponent go away"));
+                        if(didStep.get(players.getLogins().get(1))==true)
+                            socketService.sendMessageToUser(players.getLogins().get(1), answer.messageClient("you win, your opponent go away"));
+
                     }
                     else{
-                        socketService.sendMessageToUser(players.getLogins().get(1), answer.messageClient("you win, your opponent go away"));
-                        socketService.cutDownConnection(players.getLogins().get(1),CloseStatus.NORMAL);
+                        if(didStep.get(players.getLogins().get(0))==true)
+                            socketService.sendMessageToUser(players.getLogins().get(1), answer.messageClient("you win, your opponent go away"));
                     }
+                    socketService.cutDownConnection(players.getLogins().get(1),CloseStatus.NORMAL);
                     didStep.remove(login);
                     playingNow.remove(id);
                 }

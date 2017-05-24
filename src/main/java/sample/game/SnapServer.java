@@ -26,8 +26,8 @@ public class SnapServer {
     }
 
 
-    SnapServer(Players players) {
-        snapsClient=Damage.getInstance().getSnapsWithDamage(players.getSnaps());
+    SnapServer(ArrayList<SnapClient> snaps) {
+        snapsClient=Damage.getInstance().getSnapsWithDamage(snaps);
     }
     public JSONObject getJson(){
         final ObjectMapper objectMapper=new ObjectMapper();

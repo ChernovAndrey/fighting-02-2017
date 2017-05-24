@@ -11,6 +11,7 @@ import org.springframework.web.socket.CloseStatus;
 import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
 import sample.controllers.UserController;
+import sample.game.GameMechanics;
 import sample.game.GameService;
 import sample.game.SnapClient;
 import support.Answer;
@@ -29,7 +30,8 @@ public class SocketService {
     @Autowired
     private GameService gameService;
     Answer answer = new Answer();
-
+    @Autowired
+    GameMechanics gameMechanics;
     public void registerUser(@NotNull String login, @NotNull WebSocketSession webSocketSession) {
         sessions.put(login, webSocketSession);
         sendMessageToUser(login, answer.messageClient("Connect"));
@@ -47,11 +49,16 @@ public class SocketService {
     }
 
     public void removeUser(@NotNull String login) {
-        sendMessageToUser(login, answer.messageClient("Disconnect"));
-        sessions.remove(login);
+        if (isConnected(login)) sessions.remove(login);
+        final String loginOpponent=gameMechanics.getLoginOpponent(login);
+        if(loginOpponent!=null){
+            sendMessageToUser(loginOpponent,answer.messageClient("Your opponent go away, you win"));
+            cutDownConnection(loginOpponent,CloseStatus.NORMAL);
+        }
     }
 
     public void cutDownConnection(@NotNull String login, @NotNull CloseStatus closeStatus) {
+        System.out.println("close");
         final WebSocketSession webSocketSession = sessions.get(login);
         if (webSocketSession != null && webSocketSession.isOpen()) {
             try {

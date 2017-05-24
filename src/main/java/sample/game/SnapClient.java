@@ -10,15 +10,15 @@ import org.json.JSONObject;
  * Created by andrey on 24.04.17.
  */
 public class SnapClient {
-    private Long id;
-    String method;
-    String block;
-    String target;
-    Integer hp;
+    private volatile Long id;
+    volatile String method;
+    volatile String block;
+    volatile String target;
+    volatile Integer hp;
     @JsonProperty(access= JsonProperty.Access.READ_ONLY)
-    String login;
+    volatile String login;
     @JsonProperty(access= JsonProperty.Access.READ_ONLY)
-    Integer takenDamage;
+    volatile Integer takenDamage;
    @JsonCreator
     public SnapClient( @JsonProperty("id") Long id,
                         @JsonProperty("method") String method,

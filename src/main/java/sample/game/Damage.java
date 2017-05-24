@@ -19,7 +19,7 @@ import java.util.concurrent.Executors;
  * Created by andrey on 09.05.17.
  */
 public final class Damage {
-    private final ExecutorService executorService= Executors.newFixedThreadPool(2);
+    private final ExecutorService executorDamage= Executors.newFixedThreadPool(2);
     private static final Logger log = Logger.getLogger(Damage.class);
     public Integer baseDamage;
     public Double MethodHead;
@@ -68,20 +68,23 @@ public final class Damage {
     }
 
     public ArrayList<SnapClient> getSnapsWithDamage(ArrayList<SnapClient> snaps){
-        final ArrayList<Integer> damage = new ArrayList<>();
-        final CompletableFuture<Integer> damageFirst=CompletableFuture.supplyAsync(()-> calculate(snaps.get(0),snaps.get(1).block),executorService);
-        final CompletableFuture<Integer> damageSecond=CompletableFuture.supplyAsync(()-> calculate(snaps.get(1),snaps.get(0).block),executorService);
-        try {
-            return damageFirst.thenCombine(damageSecond,(damFirst,damSecond)->{
+        System.out.println(snaps.get(0).getLogin());
+        final CompletableFuture<Integer> damageFirst=CompletableFuture.supplyAsync(()-> calculate(snaps.get(0),snaps.get(1).block),executorDamage);
+        final CompletableFuture<Integer> damageSecond=CompletableFuture.supplyAsync(()-> calculate(snaps.get(1),snaps.get(0).block),executorDamage);
+             final CompletableFuture<ArrayList<SnapClient>> result=damageFirst.thenCombine(damageSecond,(damFirst, damSecond)->{
                 snaps.get(0).setTakenDamage(damFirst);
                 snaps.get(1).setTakenDamage(damSecond);
                 return snaps;
-            }).get();
-        } catch (InterruptedException | ExecutionException e) {
+        });
+        try {
+            return result.get();
+        }
+        catch (InterruptedException | ExecutionException e) {
+            System.out.println(e.getMessage());
             log.error("error in calcuate");
             System.out.println("error in calcuate");
-        }
-        return snaps;
+            return snaps;
+        }//это можно как-нибудь без try/catch сделать?
     }
     private Integer calculate(SnapClient snap, String block){
         final Double kProb = setKBlock(snap.target, block, setKMethod(snap.method));

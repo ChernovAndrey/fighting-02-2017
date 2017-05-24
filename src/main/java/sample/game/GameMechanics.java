@@ -26,7 +26,9 @@ public class GameMechanics {
     private SocketService socketService;
     @Autowired
     private GameService gameService;
-    ScheduledFuture<?> future;
+    private volatile ScheduledFuture<?> future;
+    private ExecutorService executorMessage=Executors.newFixedThreadPool(2);
+    private ExecutorService executorSnapClient=Executors.newFixedThreadPool(2);
     ScheduledExecutorService executorScheduled = Executors.newScheduledThreadPool(1);
     static final Logger log = Logger.getLogger(UserController.class);
     private volatile @NotNull Map<String,Boolean> didStep= new ConcurrentHashMap<>();
@@ -37,28 +39,28 @@ public class GameMechanics {
     public void addWaiters(String login){
         if (waiters.isEmpty()) {
             System.out.println("Waiting");
-            socketService.sendMessageToUser(login, answer.messageClient("Waiting"));
+            executorMessage.submit(()-> socketService.sendMessageToUser(login, answer.messageClient("Waiting")));
             waiters.add(login);
         } else {
             final Players players = new Players(login, waiters.poll());
             playingNow.put(id.get(), players);
-            startGame(players.getLogins());
+           executorMessage.submit(()->startGame(players.getLogins()));
         }
         future=executorScheduled.scheduleAtFixedRate(()->{
-                if (socketService.isConnected(login)) socketService.sendMessageToUser(login,answer.messageClient("pulse"));
-                else future.cancel(true);
+                if (socketService.isConnected(login)) executorMessage.submit(()->socketService.sendMessageToUser(login,answer.messageClient("pulse")));
+                else future.cancel(true);//Так можно делать?
             }, 15, 15, TimeUnit.SECONDS);
     }
 
     public void startGame(ArrayList<String> logins) {
-        logins.forEach(item -> socketService.sendMessageToUser(item, answer.messageClient(id.get(), logins)));
-        setTimeout(logins.get(0),id.get());
-        setTimeout(logins.get(1),id.get());
+        logins.forEach(item ->socketService.sendMessageToUser(item, answer.messageClient(id.get(), logins)));
+       // setTimeout(logins.get(0),id.get());
+       // setTimeout(logins.get(1),id.get());
         id.getAndIncrement();
     }
 
     public void setTimeout(String login,Long id){
-        didStep.put(login,false);
+     //   didStep.put(login,false);
       /*  executorScheduled.schedule(()->{
             if(didStep.get(login)==false) {
                 socketService.sendMessageToUser(login,answer.messageClient("Timeout"));
@@ -82,13 +84,19 @@ public class GameMechanics {
     }
 
     public void gmStep(Players players) {
-        final SnapServer snapServer = new SnapServer(players);
-        players.getLogins().forEach(item -> socketService.sendMessageToUser(item, snapServer.getJson()));
-        socketService.sendMessageToUser(players.getSnaps().get(0).getLogin(), snapServer.getJson());
-        socketService.sendMessageToUser(players.getSnaps().get(1).getLogin(), snapServer.getJson());
+       // System.out.println(players.getSnaps().get(0).getLogin());
+       /*final CompletableFuture<SnapServer> snapServer= CompletableFuture.supplyAsync(()->{
+           System.out.println(players.getSnaps().get(0).getLogin());
+           final SnapServer snap=new SnapServer(players.getSnaps());
+           System.out.println(snap.getJson().toString());
+           players.getLogins().forEach(item -> socketService.sendMessageToUser(item, snap.getJson()));
+           return snap;
+       },executorSnapClient);*/
+        final SnapServer snap=new SnapServer(players.getSnaps());
+        players.getLogins().forEach(item -> socketService.sendMessageToUser(item, snap.getJson()));
         if (players.getSnaps().get(0).hp.equals(0) || (players.getSnaps().get(1).hp.equals(0))) {
             playingNow.remove(players.getSnaps().get(0).getId());
-            endGame(players.getSnaps());
+            executorMessage.submit(()->endGame(players.getSnaps()));
         } else {
             players.cleanSnaps();
         }
@@ -96,7 +104,7 @@ public class GameMechanics {
 
     public void addSnap(SnapClient snap) {
         final Players players = playingNow.get(snap.getId());
-        didStep.replace(snap.getLogin(),true);
+     //   didStep.replace(snap.getLogin(),true);
         if (players.setAndGetSize(snap) == 2) {
             gmStep(players);
         }
@@ -110,6 +118,14 @@ public class GameMechanics {
                 socketService.sendMessageToUser(item.getLogin(), answer.messageClient("Game over. Congratulation! You win."));
             socketService.cutDownConnection(item.getLogin(), CloseStatus.NORMAL);
         });
+    }
+    public String getLoginOpponent(String login){
+        //плохое решение, но пока не придумал ничего лучше
+        for (Players value : playingNow.values()) {
+            if(value.getLogins().get(0).equals(login)) return value.getLogins().get(1);
+            if(value.getLogins().get(0).equals(login)) return value.getLogins().get(0);
+        }
+        return null;
     }
 }
 

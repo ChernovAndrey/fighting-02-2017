@@ -68,6 +68,7 @@ public class GameWebSocketHandler extends TextWebSocketHandler {
                         final Long id= (Long) json.get("id");
                         if(id==null) throw new Exception();
                         socketService.transportTotimeOut(login,id);
+                        break;
                 default:
                     System.out.println("This type is not supported");
                     log.error("This type is not supported");
@@ -83,7 +84,7 @@ public class GameWebSocketHandler extends TextWebSocketHandler {
 
     @Override
     public void afterConnectionClosed(WebSocketSession webSocketSession, CloseStatus closeStatus) {
-
+        System.out.println("closeConnect");
         final String login = (String) webSocketSession.getAttributes().get(SESSIONKEY);
         if (login == null) {
             System.out.println("null login");

@@ -8,8 +8,8 @@ import java.util.ArrayList;
  * Created by andrey on 08.05.17.
  */
 public class Players {
-    private ArrayList<SnapClient> snaps = new ArrayList<>();
-    private ArrayList<String> logins = new ArrayList<>();
+    private volatile ArrayList<SnapClient> snaps = new ArrayList<>();
+    private volatile ArrayList<String> logins = new ArrayList<>();
 
     Players(@NotNull ArrayList<String> logins) {
         this.logins = logins;

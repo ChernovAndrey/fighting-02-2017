@@ -108,6 +108,7 @@ public class GameMechanicsSingleThread {
                     if (!(socketService.isConnected(value.getFLogin()))) {
                         if (socketService.isConnected(value.getSLogin())) {
                             socketService.sendMessageToUser(value.getSLogin(), Answer.messageClient("win"));
+                            userService.updateRating(value.getSLogin(),value.getFLogin());
                             socketService.cutDownConnection(value.getSLogin(), CloseStatus.NORMAL);
                             playingNow.remove(key);
                         }
@@ -116,6 +117,7 @@ public class GameMechanicsSingleThread {
                             if (socketService.isConnected(value.getFLogin())) {
                                 socketService.sendMessageToUser(value.getFLogin(), Answer.messageClient("win"));
                                 socketService.cutDownConnection(value.getFLogin(), CloseStatus.NORMAL);
+                                userService.updateRating(value.getFLogin(),value.getSLogin());
                                 playingNow.remove(key);
                             }
                         }

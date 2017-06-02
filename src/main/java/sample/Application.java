@@ -31,7 +31,7 @@ public class Application {
     @Autowired
     GameMechanicsSingleThread gameMechanicsSingleThread;
 
-    ExecutorService executorService= Executors.newFixedThreadPool(1);
+    ExecutorService executorService= Executors.newSingleThreadExecutor();
     private static final Logger log = Logger.getLogger(Application.class);
 
     public static void main(String[] args) {
@@ -41,7 +41,7 @@ public class Application {
     @Bean
     public WebSocketHandler gameWebSocketHandler() {
         damage.resourseUp();
-        //executorService.submit(()->gameMechanicsSingleThread.checkConnect());
+        executorService.submit(()->gameMechanicsSingleThread.checkConnect());
         return new PerConnectionWebSocketHandler(GameWebSocketHandler.class);
     }
 

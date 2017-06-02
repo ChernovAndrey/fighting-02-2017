@@ -96,13 +96,8 @@ public class SocketService {
             ready.put(id,login);
             return;
         }
-        try {
-            sendMessageToUser(loginMap,Answer.messageClient("go"));
-            sendMessageToUser(login,Answer.messageClient("go"));
-            ready.remove(id);
-        }catch (Exception e){
-            System.out.println(e.getMessage());
-        }
-
+        sendMessageToUser(loginMap,Answer.messageClient("go"));
+        sendMessageToUser(login,Answer.messageClient("go"));
+        ready.remove(id);
     }
 }

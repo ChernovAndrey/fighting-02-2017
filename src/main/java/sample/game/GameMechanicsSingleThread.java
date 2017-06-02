@@ -99,27 +99,29 @@ public class GameMechanicsSingleThread {
 
 
     //в отдельном потоке
-    /*public void checkConnect(){
-        while (true){
-            playingNow.forEach((key,value)-> {
-                if (!(socketService.isConnected(value.getFLogin()))) {
-                    if (socketService.isConnected(value.getSLogin())) {
-                        socketService.sendMessageToUser(value.getSLogin(), Answer.messageClient("win"));
-                        socketService.cutDownConnection(value.getSLogin(), CloseStatus.NORMAL);
-                        playingNow.remove(key);
-                    }
-                } else {
-                    if (!(socketService.isConnected(value.getSLogin()))) {
-                        if (socketService.isConnected(value.getFLogin())) {
-                            socketService.sendMessageToUser(value.getFLogin(), Answer.messageClient("win"));
-                            socketService.cutDownConnection(value.getFLogin(), CloseStatus.NORMAL);
+    public void checkConnect(){
+        while (true) {
+            try {
+                playingNow.forEach((key, value) -> {
+                    if (!(socketService.isConnected(value.getFLogin()))) {
+                        if (socketService.isConnected(value.getSLogin())) {
+                            socketService.sendMessageToUser(value.getSLogin(), Answer.messageClient("win"));
+                            socketService.cutDownConnection(value.getSLogin(), CloseStatus.NORMAL);
+                            playingNow.remove(key);
                         }
-                         playingNow.remove(key);
+                    } else {
+                        if (!(socketService.isConnected(value.getSLogin()))) {
+                            if (socketService.isConnected(value.getFLogin())) {
+                                socketService.sendMessageToUser(value.getFLogin(), Answer.messageClient("win"));
+                                socketService.cutDownConnection(value.getFLogin(), CloseStatus.NORMAL);
+                            }
+                            playingNow.remove(key);
+                        }
                     }
-                }
-            });
+                });
+            }catch (Exception e) {System.out.println(e.getMessage());}
         }
-    }*/
+    }
 }
 
 

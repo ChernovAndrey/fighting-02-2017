@@ -65,7 +65,6 @@ public class GameWebSocketHandler extends TextWebSocketHandler {
                     break;
             }
         } catch (Exception e) {
-            System.out.println("dqWADFSBGVN");
             log.error("Json error",e);
         }
     }

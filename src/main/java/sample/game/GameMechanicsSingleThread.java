@@ -2,6 +2,7 @@ package sample.game;
 
 import objects.UsersData;
 import org.apache.log4j.Logger;
+import org.hibernate.stat.internal.ConcurrentEntityStatisticsImpl;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -15,6 +16,7 @@ import support.TimeOut;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicLong;
 
@@ -35,7 +37,7 @@ public class GameMechanicsSingleThread {
     static final Logger log = Logger.getLogger(UserController.class);
     private AtomicLong id = new AtomicLong(1);
     private final @NotNull ConcurrentLinkedQueue<String> waiters = new ConcurrentLinkedQueue<>();
-    private final @NotNull HashMap<Long, Players> playingNow = new HashMap<>();
+    private final @NotNull Map<Long, Players> playingNow = new ConcurrentHashMap<>();
 
 
     public void addWaiters(String login){
@@ -114,8 +116,8 @@ public class GameMechanicsSingleThread {
                             if (socketService.isConnected(value.getFLogin())) {
                                 socketService.sendMessageToUser(value.getFLogin(), Answer.messageClient("win"));
                                 socketService.cutDownConnection(value.getFLogin(), CloseStatus.NORMAL);
+                                playingNow.remove(key);
                             }
-                            playingNow.remove(key);
                         }
                     }
                 });

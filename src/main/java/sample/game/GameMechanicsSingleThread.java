@@ -97,6 +97,10 @@ public class GameMechanicsSingleThread {
             userService.updateRating(first.getLogin(),second.getLogin());
             return;
         }
+        if((second.hp<=0)&&(first.hp<=0)){
+            userService.updateRating(first.getLogin(),second.getLogin(),"draw");
+            return;
+        }
     }
 
 

@@ -126,6 +126,24 @@ public class UserService {
         jdbcTemplate.update(
                 "UPDATE usersData SET (rating,game_count,game_count_win) = (?,game_count+1,game_count_win) WHERE login = ?", newRatingL,looser);
     }
+
+    public void updateRating(String winner, String looser,String draw) {
+        if (draw.equals("draw")) {
+            final Integer ratingW = jdbcTemplate.queryForObject("Select rating from usersData where login=?",
+                    new Object[]{winner}, Integer.class);
+            final Integer ratingL = jdbcTemplate.queryForObject("Select rating from usersData where login=?",
+                    new Object[]{looser}, Integer.class);
+            final Double Ew = 1 / (1 + (Math.pow(10, ((ratingL - ratingW) / 400))));      //мат ожидание
+            final Double El = 1 / (1 + (Math.pow(10, ((ratingW - ratingL) / 400))));      //мат ожидание
+            final Double newRatingW = ratingW + 5 * (0.5 - Ew);
+            final Double newRatingL = ratingW + 5 * (0.5 - El);
+            jdbcTemplate.update(
+                    "UPDATE usersData SET (rating,game_count,game_count_win) = (?,game_count+1,game_count_win+1) WHERE login = ?", newRatingW, winner);
+            jdbcTemplate.update(
+                    "UPDATE usersData SET (rating,game_count,game_count_win) = (?,game_count+1,game_count_win) WHERE login = ?", newRatingL, looser);
+
+        }
+    }
     public @Nullable UsersData updateInfo(UsersData usersData) {
         try {
             final int rownum = jdbcTemplate.update(

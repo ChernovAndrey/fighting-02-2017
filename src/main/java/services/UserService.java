@@ -119,8 +119,8 @@ public class UserService {
                 new Object[]{looser}, Integer.class);
         final Double Ew=1/(1+(Math.pow(10,((ratingL-ratingW)/400))));      //мат ожидание
         final Double El=1/(1+(Math.pow(10,((ratingW-ratingL)/400))));      //мат ожидание
-        final Double newRatingW=ratingW+5*(1.0-Ew);
-        final Double newRatingL=ratingW+5*(0.0-El);
+        final Double newRatingW=ratingW+20*(1.0-Ew);
+        final Double newRatingL=ratingW+20*(0.0-El);
         jdbcTemplate.update(
                 "UPDATE usersData SET (rating,game_count,game_count_win) = (?,game_count+1,game_count_win+1) WHERE login = ?", newRatingW,winner);
         jdbcTemplate.update(
@@ -135,8 +135,8 @@ public class UserService {
                     new Object[]{looser}, Integer.class);
             final Double Ew = 1 / (1 + (Math.pow(10, ((ratingL - ratingW) / 400))));      //мат ожидание
             final Double El = 1 / (1 + (Math.pow(10, ((ratingW - ratingL) / 400))));      //мат ожидание
-            final Double newRatingW = ratingW + 5 * (0.5 - Ew);
-            final Double newRatingL = ratingW + 5 * (0.5 - El);
+            final Double newRatingW = ratingW + 20 * (0.5 - Ew);
+            final Double newRatingL = ratingW + 20 * (0.5 - El);
             jdbcTemplate.update(
                     "UPDATE usersData SET (rating,game_count,game_count_win) = (?,game_count+1,game_count_win+1) WHERE login = ?", newRatingW, winner);
             jdbcTemplate.update(

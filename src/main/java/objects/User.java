@@ -11,7 +11,7 @@ import java.util.function.Predicate;
 
 
 /**
- * Created by Denis on 21.02.2017.
+ * Created by andrey on 21.02.2017.
  */
 
 public class User implements Mutual {

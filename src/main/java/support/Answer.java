@@ -8,13 +8,12 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 import sample.game.SnapServer;
 
-import java.util.ArrayList;
-
 /**
  * Created by andrey on 06.04.17.
  */
 public final class Answer {
-    private Answer(){}
+    private Answer() {
+    }
 
     private static final Logger log = Logger.getLogger(SnapServer.class);
 
@@ -53,12 +52,12 @@ public final class Answer {
         return result;
     }
 
-    public  static JSONObject getJson(SnapServer snapServer){
-        final ObjectMapper objectMapper=new ObjectMapper();
+    public static JSONObject getJson(SnapServer snapServer) {
+        final ObjectMapper objectMapper = new ObjectMapper();
         try {
-            return  new JSONObject(objectMapper.writeValueAsString(snapServer));
+            return new JSONObject(objectMapper.writeValueAsString(snapServer));
         } catch (JsonProcessingException e) {
-            log.error("Json error",e);
+            log.error("Json error", e);
         }
         return new JSONObject();
     }

@@ -1,7 +1,7 @@
 package objects;
 
 /**
- * Created by Denis on 22.02.2017.
+ * Created by andrey on 22.02.2017.
  */
 public class HttpStatus {
 

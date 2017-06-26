@@ -1,12 +1,10 @@
 package sample.websocket;
 
-import org.json.JSONObject;
-
 /**
  * Created by andrey on 27.04.17.
  */
 public class Message {
-    String  type;
+    String type;
     protected String content;
 
     public String getType() {
@@ -17,5 +15,6 @@ public class Message {
         return content;
     }
 
-    public Message(){}
+    public Message() {
+    }
 }

@@ -15,9 +15,7 @@ import sample.game.GameService;
 import sample.game.SnapClient;
 import support.Answer;
 
-import java.awt.image.AreaAveragingScaleFilter;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -55,20 +53,21 @@ public class SocketService {
         final WebSocketSession webSocketSession = sessions.get(login);
         if (webSocketSession != null && webSocketSession.isOpen()) {
             try {
-                sendMessageToUser(login,Answer.messageClient("Bye"));
+                sendMessageToUser(login, Answer.messageClient("Bye"));
                 webSocketSession.close(closeStatus);
                 sessions.remove(login);
             } catch (IOException e) {
-                log.error("session did not close",e);
+                log.error("session did not close", e);
             }
         }
     }
 
-    public void sendMessageToUser(@NotNull String first, @NotNull String second, @NotNull JSONObject json){
-        sendMessageToUser(first,json);
-        sendMessageToUser(second,json);
+    public void sendMessageToUser(@NotNull String first, @NotNull String second, @NotNull JSONObject json) {
+        sendMessageToUser(first, json);
+        sendMessageToUser(second, json);
 
     }
+
     public void sendMessageToUser(@NotNull String login, @NotNull JSONObject json) {
         final WebSocketSession webSocketSession = sessions.get(login);
         if (webSocketSession == null) {
@@ -90,14 +89,14 @@ public class SocketService {
         }
     }
 
-    public void prepareGaming(Long id, String login){
-        final String loginMap =ready.get(id);
-        if(loginMap==null) {
-            ready.put(id,login);
+    public void prepareGaming(Long id, String login) {
+        final String loginMap = ready.get(id);
+        if (loginMap == null) {
+            ready.put(id, login);
             return;
         }
-        sendMessageToUser(loginMap,Answer.messageClient("go"));
-        sendMessageToUser(login,Answer.messageClient("go"));
+        sendMessageToUser(loginMap, Answer.messageClient("go"));
+        sendMessageToUser(login, Answer.messageClient("go"));
         ready.remove(id);
     }
 }

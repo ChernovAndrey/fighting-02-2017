@@ -1,7 +1,6 @@
 package sample.websocket;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import org.json.JSONObject;
 
 /**
@@ -9,10 +8,10 @@ import org.json.JSONObject;
  */
 public class MessageReceive extends Message {
     @JsonCreator
-    public MessageReceive(String message){
-        final JSONObject json=new JSONObject(message);
-        type=json.get("type").toString();
+    public MessageReceive(String message) {
+        final JSONObject json = new JSONObject(message);
+        type = json.get("type").toString();
         json.remove("type");
-        content=json.toString();
+        content = json.toString();
     }
 }

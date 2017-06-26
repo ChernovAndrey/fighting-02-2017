@@ -4,18 +4,16 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.stereotype.Service;
-import sample.websocket.Message;
 import support.GameData;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.ArrayList;
 
 /**
  * Created by andrey on 09.05.17.
  */
 @Service
-public  class Damage {
+public class Damage {
     private static final Logger log = Logger.getLogger(Damage.class);
     public Integer baseDamage;
     public Double MethodHead;
@@ -24,15 +22,17 @@ public  class Damage {
     public Double BlockHead;
     public Double BlockBody;
     private static Damage instance;
-    public void resourseUp(){
+
+    public void resourseUp() {
         final InputStream inJson = GameData.class.getResourceAsStream("/InitialData.json");
         try {
             instance = new ObjectMapper().readValue(inJson, Damage.class);
 
         } catch (IOException e) {
-            log.error("wrong json in resource file",e);
+            log.error("wrong json in resource file", e);
         }
     }
+
     public Double setKMethod(String method) {
         System.out.println(instance.MethodArm);
         Double kProb = 1.0;
@@ -55,16 +55,17 @@ public  class Damage {
     }
 
     public void SetDamage(SnapClient first, SnapClient second) {
-        calculate(first,second.block);
-        calculate(second,first.block);
+        calculate(first, second.block);
+        calculate(second, first.block);
     }
-    private void calculate(SnapClient snap, String block){
-        if(snap.method.equals("null")) {
+
+    private void calculate(SnapClient snap, String block) {
+        if (snap.method.equals("null")) {
             snap.setTakenDamage(0);
             return;
         }
         final Double kProb = setKBlock(snap.target, block, setKMethod(snap.method));
-        if (Math.random()<kProb){
+        if (Math.random() < kProb) {
             snap.setTakenDamage(0);
             return;
         }

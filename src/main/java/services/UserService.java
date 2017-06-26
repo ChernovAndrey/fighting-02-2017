@@ -14,7 +14,6 @@ import org.springframework.transaction.annotation.Transactional;
 import services.mappers.UserMapper;
 import services.mappers.UsersDataMapper;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -48,7 +47,7 @@ public class UserService {
     @Transactional
     private void registerUser(User user) {
         jdbcTemplate.update("insert into users (login,password) values (?,?);", user.getLogin(), user.getHashPassword());
-        jdbcTemplate.update("INSERT INTO usersData (login,rating) values (?,?);", user.getLogin(),1200);
+        jdbcTemplate.update("INSERT INTO usersData (login,rating) values (?,?);", user.getLogin(), 1200);
     }
 
     @Transactional
@@ -112,22 +111,22 @@ public class UserService {
         }
     }
 
-    public void updateRating(String winner, String looser){
+    public void updateRating(String winner, String looser) {
         final Integer ratingW = jdbcTemplate.queryForObject("Select rating from usersData where login=?",
                 new Object[]{winner}, Integer.class);
         final Integer ratingL = jdbcTemplate.queryForObject("Select rating from usersData where login=?",
                 new Object[]{looser}, Integer.class);
-        final Double Ew=1/(1+(Math.pow(10,((ratingL-ratingW)/400))));      //мат ожидание
-        final Double El=1/(1+(Math.pow(10,((ratingW-ratingL)/400))));      //мат ожидание
-        final Double newRatingW=ratingW+20*(1.0-Ew);
-        final Double newRatingL=ratingW+20*(0.0-El);
+        final Double Ew = 1 / (1 + (Math.pow(10, ((ratingL - ratingW) / 400))));      //мат ожидание
+        final Double El = 1 / (1 + (Math.pow(10, ((ratingW - ratingL) / 400))));      //мат ожидание
+        final Double newRatingW = ratingW + 20 * (1.0 - Ew);
+        final Double newRatingL = ratingW + 20 * (0.0 - El);
         jdbcTemplate.update(
-                "UPDATE usersData SET (rating,game_count,game_count_win) = (?,game_count+1,game_count_win+1) WHERE login = ?", newRatingW,winner);
+                "UPDATE usersData SET (rating,game_count,game_count_win) = (?,game_count+1,game_count_win+1) WHERE login = ?", newRatingW, winner);
         jdbcTemplate.update(
-                "UPDATE usersData SET (rating,game_count,game_count_win) = (?,game_count+1,game_count_win) WHERE login = ?", newRatingL,looser);
+                "UPDATE usersData SET (rating,game_count,game_count_win) = (?,game_count+1,game_count_win) WHERE login = ?", newRatingL, looser);
     }
 
-    public void updateRating(String winner, String looser,String draw) {
+    public void updateRating(String winner, String looser, String draw) {
         if (draw.equals("draw")) {
             final Integer ratingW = jdbcTemplate.queryForObject("Select rating from usersData where login=?",
                     new Object[]{winner}, Integer.class);
@@ -144,6 +143,7 @@ public class UserService {
 
         }
     }
+
     public @Nullable UsersData updateInfo(UsersData usersData) {
         try {
             final int rownum = jdbcTemplate.update(

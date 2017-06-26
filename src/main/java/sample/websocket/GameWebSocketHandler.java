@@ -5,7 +5,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
 import org.json.JSONObject;
-import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.socket.CloseStatus;
 import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
@@ -26,7 +25,7 @@ public class GameWebSocketHandler extends TextWebSocketHandler {
     private static final String SESSIONKEY = "user";
     private static final Logger log = Logger.getLogger(UserService.class);
     private @NotNull SocketService socketService;
-    private ExecutorService executorService= Executors.newSingleThreadExecutor();
+    private ExecutorService executorService = Executors.newSingleThreadExecutor();
 
 
     public GameWebSocketHandler(@NotNull SocketService socketService, @NotNull UserService userService) {
@@ -47,7 +46,7 @@ public class GameWebSocketHandler extends TextWebSocketHandler {
         final String login = session.getAttributes().get(SESSIONKEY).toString();
         try {
             final ObjectMapper objectMapper = new ObjectMapper();
-            final MessageReceive message =new MessageReceive(textMessage.getPayload());
+            final MessageReceive message = new MessageReceive(textMessage.getPayload());
             switch (message.getType()) {
                 case "step":
                     final SnapClient snapClient = objectMapper.readValue(message.getContent(), SnapClient.class);
@@ -55,9 +54,9 @@ public class GameWebSocketHandler extends TextWebSocketHandler {
                     socketService.transportToMechanics(snapClient);
                     break;
                 case "ready":
-                    final JSONObject json=new JSONObject(message.getContent());
+                    final JSONObject json = new JSONObject(message.getContent());
                     final Long id = Long.parseLong(json.get("id").toString());
-                    executorService.submit(()->socketService.prepareGaming(id,login));
+                    executorService.submit(() -> socketService.prepareGaming(id, login));
                     break;
                 default:
                     log.error("This type is not supported");
@@ -65,7 +64,7 @@ public class GameWebSocketHandler extends TextWebSocketHandler {
                     break;
             }
         } catch (Exception e) {
-            log.error("Json error",e);
+            log.error("Json error", e);
         }
     }
 

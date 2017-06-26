@@ -2,8 +2,6 @@ package sample.game;
 
 import org.jetbrains.annotations.NotNull;
 
-import java.util.ArrayList;
-
 /**
  * Created by andrey on 08.05.17.
  */
@@ -12,47 +10,55 @@ public class Players {
     private SnapClient sSnap;//second
     private String fLogin;
     private String sLogin;
-    Players(@NotNull SnapClient firstSnap,@NotNull SnapClient secondSnap) {
-      this.fSnap=firstSnap;
-      this.sSnap=secondSnap;
+
+    Players(@NotNull SnapClient firstSnap, @NotNull SnapClient secondSnap) {
+        this.fSnap = firstSnap;
+        this.sSnap = secondSnap;
     }
 
-    public SnapClient getFSnap(){
+    public SnapClient getFSnap() {
         System.out.println(fSnap);
         return fSnap;
     }
 
 
-    public SnapClient getSSnap(){return sSnap;}
-
-    Players(@NotNull String first, @NotNull String second) {
-        this.fLogin=first;
-        this.sLogin=second;
+    public SnapClient getSSnap() {
+        return sSnap;
     }
 
-    public boolean addSnap(SnapClient snap){
-        if(fSnap==null){
-            fSnap=snap;
+    Players(@NotNull String first, @NotNull String second) {
+        this.fLogin = first;
+        this.sLogin = second;
+    }
+
+    public boolean addSnap(SnapClient snap) {
+        if (fSnap == null) {
+            fSnap = snap;
             return false;
         }
-        if(sSnap==null){
-            sSnap=snap;
+        if (sSnap == null) {
+            sSnap = snap;
             return true;
         }
         return false;
     }
 
 
+    public String getFLogin() {
+        return fLogin;
+    }
 
-    public String getFLogin(){return fLogin;}
+    public String getSLogin() {
+        return sLogin;
+    }
 
-    public String getSLogin(){return sLogin;}
+    public boolean check() {
+        return ((fSnap != null) && (sSnap != null));
+    }
 
-    public boolean check(){ return ((fSnap!=null)&&(sSnap!=null));}
-
-    public void clean(){
-        this.sSnap=null;
-        this.fSnap=null;
+    public void clean() {
+        this.sSnap = null;
+        this.fSnap = null;
     }
 
 }

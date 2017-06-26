@@ -3,7 +3,7 @@ package objects;
 import javax.servlet.http.HttpServletResponse;
 
 /**
- * Created by Denis on 05.03.2017.
+ * Created by andrey on 05.03.2017.
  */
 public class HttpResponse {
 

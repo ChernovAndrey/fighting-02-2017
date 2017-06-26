@@ -11,9 +11,10 @@ import java.util.Map;
 public class MessageSend extends Message {
     private Map<String, Object> properties = new HashMap<>();
 
-    public MessageSend(String type, String content){
-        this.type=type;
+    public MessageSend(String type, String content) {
+        this.type = type;
     }
+
     @JsonAnyGetter
     public Map<String, Object> properties() {
         return properties;

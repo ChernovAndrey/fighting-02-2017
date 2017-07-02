@@ -1,8 +1,8 @@
 {
-  "baseDamage":40,
-  "MethodHead":0.65,
-  "MethodArm":0.95,
-  "MethodLeg":0.8,
-  "BlockHead":0.6,
-  "BlockBody":0.8
+  "baseDamage": 40,
+  "MethodHead": 0.65,
+  "MethodArm": 0.95,
+  "MethodLeg": 0.8,
+  "BlockHead": 0.6,
+  "BlockBody": 0.8
 }
